@@ -1,2 +1,6 @@
 #Author Amir Aizin
-#Check
+
+
+print('CheckConnection')
+
+
