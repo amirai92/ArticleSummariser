@@ -1,6 +1,6 @@
 # Author Amir Aizin
 import os
-from keras.callbacks import TensorBoard, ModelCheckpoint
+from keras.callbacks import ModelCheckpoint
 from sklearn.model_selection import train_test_split
 import numpy as np
 import pandas as pd
@@ -18,7 +18,7 @@ from keras import backend as K
 from Attention import AttentionLayer
 from Contraction_Mapping import Contraction_Mapping
 K.clear_session()
-latent_dim = 500
+latent_dim = 8000
 pd.set_option("display.max_colwidth", 200)
 warnings.filterwarnings("ignore")
 
@@ -31,8 +31,8 @@ contraction_mapping = p1.contraction_mapping
 # Reading The Data out:
 dataT = []
 dataS = []
-PathText = "/Users/Amir/PycharmProjects/FinalProject/DS/TXT"
-PathSumarry = "/Users/Amir/PycharmProjects/FinalProject/DS/SUM"
+PathText = "DS/TXT"
+PathSumarry = "DS/SUM"
 
 
 def readFile():
@@ -152,7 +152,7 @@ length_df = pd.DataFrame({'text': text_word_count, 'summary': summary_word_count
 length_df.hist(bins=30)
 
 # TODO: remove this
-#pyplot.show()
+pyplot.show()
 
 #Check the biggest file size :
 #print("Text",data["Text"].str.len().max())
@@ -160,7 +160,7 @@ length_df.hist(bins=30)
 
 
 # This variables can be changed depends on the plot that printed before or by finding the maximum length of summary and text
-max_len_text = 12000
+max_len_text = 8000
 max_len_summary = 500
 
 
@@ -262,15 +262,15 @@ es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=2)
 
 #change from test1.h5 the name of the model give instead
 
-checkpoint = ModelCheckpoint(filepath="weights.best.hdf5", monitor='val_acc', verbose=1, save_best_only=True,
-                             save_weights_only=True, mode='auto', period=1)
+checkpoint = ModelCheckpoint("best_model.hdf5", monitor='val_acc', verbose=1, save_best_only=True,
+                             mode='auto', period=1)
 
 
 #tensorboard = TensorBoard(log_dir="model", histogram_freq=1, write_graph=True, write_images=True)
 # history attribute is a record of training loss values and metrics values at successive epochs.
 
 history = model.fit([x_tr, y_tr[:, :-1]], y_tr.reshape(y_tr.shape[0], y_tr.shape[1], 1)[:, 1:], epochs=32,
-                    callbacks=[es,checkpoint], batch_size=128,
+                    callbacks=[es,checkpoint], batch_size=16,
                     validation_data=([x_val, y_val[:, :-1]], y_val.reshape(y_val.shape[0], y_val.shape[1], 1)[:, 1:]))
 
 
@@ -370,7 +370,6 @@ def seq2text(input_seq):
         if (i != 0):
             newString = newString + reverse_source_word_index[i] + ' '
     return newString
-
 
 
 
