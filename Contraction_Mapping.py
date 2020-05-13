@@ -1,4 +1,3 @@
-
 class Contraction_Mapping():
     """
         This class has a dict that contains any kind of short form words.
