@@ -10,7 +10,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from nltk.corpus import stopwords
 from matplotlib import pyplot
-from tensorflow.keras.layers import Input, LSTM, Embedding, Dense, Concatenate, TimeDistributed, Bidirectional
+from tensorflow.keras.layers import Input, LSTM, Embedding, Dense, Concatenate, TimeDistributed
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping
 import warnings
@@ -31,8 +31,8 @@ contraction_mapping = p1.contraction_mapping
 # Reading The Data out:
 dataT = []
 dataS = []
-PathText = "DS/TXT"
-PathSumarry = "DS/SUM"
+PathText = "DataSet/TXT"
+PathSumarry = "DataSet/SUM"
 
 
 def readFile():
@@ -247,7 +247,7 @@ decoder_concat_input = Concatenate(axis=-1, name='concat_layer')([decoder_output
 decoder_dense = TimeDistributed(Dense(y_voc_size, activation='softmax'))
 decoder_outputs = decoder_dense(decoder_concat_input)
 
-# Define the model
+# Define the model_test
 model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
 model.summary()
 
@@ -260,13 +260,13 @@ model.compile(optimizer='rmsprop', loss='sparse_categorical_crossentropy', metri
 es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=2)
 
 
-#change from test1.h5 the name of the model give instead
+#change from test1.h5 the name of the model_test give instead
 
 checkpoint = ModelCheckpoint("best_model.hdf5", monitor='val_acc', verbose=1, save_best_only=True,
                              mode='auto', period=1)
 
 
-#tensorboard = TensorBoard(log_dir="model", histogram_freq=1, write_graph=True, write_images=True)
+#tensorboard = TensorBoard(log_dir="model_test", histogram_freq=1, write_graph=True, write_images=True)
 # history attribute is a record of training loss values and metrics values at successive epochs.
 
 history = model.fit([x_tr, y_tr[:, :-1]], y_tr.reshape(y_tr.shape[0], y_tr.shape[1], 1)[:, 1:], epochs=32,
@@ -314,7 +314,7 @@ decoder_inf_concat = Concatenate(axis=-1, name='concat')([decoder_outputs2, attn
 # A dense softmax layer to generate prob dist. over the target vocabulary
 decoder_outputs2 = decoder_dense(decoder_inf_concat)
 
-# Final decoder model
+# Final decoder model_test
 decoder_model = Model(
     [decoder_inputs] + [decoder_hidden_state_input, decoder_state_input_h, decoder_state_input_c],
     [decoder_outputs2] + [state_h2, state_c2])
