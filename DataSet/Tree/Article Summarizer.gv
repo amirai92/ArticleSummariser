@@ -1,0 +1,58 @@
+digraph "Article Summarizer" {
+	node [shape=plaintext]
+	"6.  Discussion and Limitations
+"
+	"6.  Discussion and Limitations
+" -> "6.  Discussion and Limitations
+" [constraint=false]
+	"5.2.  Tasks & Benefits
+"
+	"5.2.  Tasks & Benefits
+" -> "5.2.  Tasks & Benefits
+" [constraint=false]
+	"1.  Introduction
+"
+	"1.  Introduction
+" -> "1.  Introduction
+" [constraint=false]
+	"1.  Introduction
+"
+	"1.  Introduction
+" -> "1.  Introduction
+" [constraint=false]
+	"5.1.  The VisExpress-project
+"
+	"5.1.  The VisExpress-project
+" -> "5.1.  The VisExpress-project
+" [constraint=false]
+	"24) and little expressive statements like ’The domain experts
+"
+	"24) and little expressive statements like ’The domain experts
+" -> "24) and little expressive statements like ’The domain experts
+" [constraint=false]
+	"7.  Conclusion
+"
+	"7.  Conclusion
+" -> "7.  Conclusion
+" [constraint=false]
+	"3.  The Interdisciplinary Communication Issue
+"
+	"3.  The Interdisciplinary Communication Issue
+" -> "3.  The Interdisciplinary Communication Issue
+" [constraint=false]
+	"4.  The Liaison Role
+"
+	"4.  The Liaison Role
+" -> "4.  The Liaison Role
+" [constraint=false]
+	"5.  Benefits and tasks of the Liaison and the VIS team
+"
+	"5.  Benefits and tasks of the Liaison and the VIS team
+" -> "5.  Benefits and tasks of the Liaison and the VIS team
+" [constraint=false]
+	"2.  Related Work
+"
+	"2.  Related Work
+" -> "2.  Related Work
+" [constraint=false]
+}
