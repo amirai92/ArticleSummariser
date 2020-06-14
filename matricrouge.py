@@ -17,17 +17,19 @@ import numpy as np
 handlers = [logging.StreamHandler()]
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(levelname)s - %(message)s', datefmt="%H:%M:%S",
                     handlers=handlers)
-#initialize variables
+#initialize dict's:
 rouge_1_dct = {}
 rouge_2_dct = {}
 rouge_l_dct = {}
 dct = {}
-
+#Saving the F-Measure &Precision &Recall results:
 rouge_1 = {"f": [], "p": [], "r": []}
 rouge_2 = {"f": [], "p": [], "r": []}
 rouge_l = {"f": [], "p": [], "r": []}
-
-
+#Directory path:
+ref_path = 'DataSet/Bert/'
+hyp_path = 'DataSet/SUM/'
+txtPath = "DataSet/TXT"
 """
 Reference Summary (gold standard — usually by humans):
 System Summary (what the machine produced):
@@ -72,6 +74,10 @@ def move_to_dict(data):
                 rouge_l_dct['p'] = data[file][0][rouge]['p']
                 rouge_l_dct['r'] = data[file][0][rouge]['r']
 
+
+
+
+def move_from_dict_to_plot(data):
     for file in data.keys():
         for metric in data[file][0]["rouge-1"].keys():
             if metric == 'f':
@@ -81,9 +87,6 @@ def move_to_dict(data):
             elif metric == 'r':
                 rouge_1[metric].append(data[file][0]["rouge-1"][metric])
 
-
-
-def move_from_dict_to_plot(data):
     for file in data.keys():
         for metric in data[file][0]["rouge-2"].keys():
             if metric == 'f':
@@ -107,9 +110,7 @@ if __name__ == "__main__":
     logging.info("Script started")
     files_rouge = FilesRouge()
     rouge = Rouge()
-    ref_path = 'DataSet/Bert/'
-    hyp_path = 'DataSet/SUM/'
-    txtPath = "DataSet/TXT"
+
     dct=calcRouge()
 
     #saving the results to json file
@@ -133,7 +134,6 @@ if __name__ == "__main__":
 
 
 
-
     plot(rouge_2['f'], label='F-Measure')
     plot(rouge_2['p'], label='Precision')
     plot(rouge_2['r'], label='Recall')
@@ -149,7 +149,7 @@ if __name__ == "__main__":
     f.close()
 
 
-logging.info("Script ended, execution time: " + str(datetime.now() - startTime))
 
+    logging.info("Script ended, execution time: " + str(datetime.now() - startTime))
 
 
