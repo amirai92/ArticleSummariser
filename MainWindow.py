@@ -7,6 +7,7 @@ from tkinter.scrolledtext import *
 from shutil import copyfile
 
 import graphviz
+from summarizer import Summarizer
 
 pathsections = "DataSet/Sections"
 pathtext = "DataSet/TXT"
@@ -78,7 +79,7 @@ def openfiles():
                 f.seek(0)
     save_file_name.sort()
     #Create graph with visualization
-    G = graphviz.Digraph(name="Article Summarizer", node_attr={'shape': 'tab', 'fixedsize': 'False'})
+    G = graphviz.Digraph(name="Article Hierarchy", node_attr={'shape': 'tab', 'fixedsize': 'False'})
     for file in os.listdir(section_path):
         full_path = os.path.join(section_path, file)
     with open(full_path, "r", encoding="utf-8") as f:
@@ -91,6 +92,26 @@ def openfiles():
                 G.view(directory=tree_path)
 
 
+
+def splited_files():
+    filename = filedialog.askopenfilename(initialdir=pathsections, title="Select A File",filetypes=(("Splitied Text files", ".txt"),("All Files" ,"*.* ")))
+   # read_text = open(filename, "r", encoding="utf-8").read()
+
+    with open(filename, "r", encoding="utf-8") as f:
+        data = []
+        data.append((f.read()))
+        listToStr = ""
+        listToStr = ' '.join([str(elem) for elem in data])
+        model = Summarizer()
+        result = model(listToStr, min_length=60)
+        full = ''.join(result)
+        #bert_path = os.path.join(bertPath, file)
+        #oldfile = open(bert_path, 'w', encoding="utf-8")
+        #oldfile.write(full)
+    result = '\nSummary:{}'.format(full)
+    tab2_display_text.insert(tk.END, result)
+
+    #displayed_file.insert(tk.END, full)
 
 def get_file_summary():
   raw_text = displayed_file.get('1.0', tk.END)
@@ -119,7 +140,7 @@ def clear_text_file():
     displayed_file.delete('1.0', END)
 
 # FILE PROCESSING TAB
-l1 = Label(tab2, text="File Text:")
+l1 = Label(tab2, text="The Whole File Text:")
 l1.grid(row=1, column=1)
 
 displayed_file = ScrolledText(tab2, height=7)  # Initial was Text(tab2)
@@ -141,9 +162,8 @@ b3.grid(row=5, column=1, padx=10, pady=10)
 b4 = Button(tab2, text="Close", width=12, command=window.destroy)
 b4.grid(row=5, column=2, padx=10, pady=10)
 
-#b5 = Button(tab2, text="Split file ", width=12 , command=split_file)
-#b5.grid(row=5, column=0, padx=10, pady=10)
-
+b5 = Button(tab2, text="Summarize splitied files  ", width=18 , command=splited_files)
+b5.grid(row=5, column=0, padx=10, pady=10)
 
 # Display Screen
 # tab2_display_text = Text(tab2)
@@ -152,12 +172,22 @@ tab2_display_text.grid(row=7, column=0, columnspan=3, padx=5, pady=5)
 
 
 # Allows you to edit
-tab2_display_text.config(state=NORMAL)
+#tab2_display_text.config(state=NORMAL)
+#displayed_file = ScrolledText(tab1, text="Have you ever encountered a situation where you had to scroll through a 400-word article only to realize that there were only a few key points in the article? \n"
+ #                        "We were all there. In this age of information, when content is being created every second around the world, it becomes quite difficult to extract the most important information in an optimal period of time, as the information we accumulate is only growing. \n "
+  #                      "In recent years, advances and developments in machine learning and deep learning techniques have paved the way and will be a future breakthrough, therefore in this project I have built a system that will help all kind of users to automatically summarize sections within academic article." ,height=7)  # Initial was Text(tab2)
+#displayed_file.grid(row=2, column=0, columnspan=3, padx=5, pady=3)
 # About TAB
-about_label = Label(tab1,
-                    text="Summaryzer GUI V.0.0.1 \n Amir Aizin \n ",
-                    pady=5, padx=5)
-about_label.grid(column=0, row=1)
+
+#about_label.grid(column=0, row=1)
+
+
+
+quote = """Have you ever encountered a situation where you had to scroll through a 400-word article only to realize that there were only a few key points in the article? \n"
+        "We were all there. In this age of information, when content is being created every second around the world, it becomes quite difficult to extract the most important information in an optimal period of time, as the information we accumulate is only growing. \n
+        In recent years, advances and developments in machine learning and deep learning techniques have paved the way and will be a future breakthrough, therefore in this project I have built a system that will help all kind of users to automatically summarize sections within academic article. \n"""
+
+
 
 
 
@@ -165,5 +195,5 @@ def get_filenames():
     path = "DataSet/TXT/"
     return os.listdir(path)
 
-
+window.wm_iconbitmap('Logo FinalProject.png')
 window.mainloop()
