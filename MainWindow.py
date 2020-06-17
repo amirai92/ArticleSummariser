@@ -1,22 +1,29 @@
 import os
+import shutil
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk, filedialog
 from tkinter.scrolledtext import *
+from shutil import copyfile
+
+import graphviz
 
 pathsections = "DataSet/Sections"
 pathtext = "DataSet/TXT"
-"""
+save_file_name = []
+tree_path = "Tree"
+section_path = "DataSet/Sections"
+text=[]
 
 # Structure and Layout
 
-text=[]
 window = Tk()
 window.title("Summaryzer")
 window.geometry("800x600")
 window.config(background='black')
 style = ttk.Style(window)
 style.configure('lefttab.TNotebook', tabposition='wn' )
+
 
 
 # TAB LAYOUT
@@ -42,29 +49,48 @@ tab_control.pack(expand=1, fill='both')
 # Functions
 def openfiles():
     filename = filedialog.askopenfilename(initialdir=pathtext, title="Select A File",filetypes=(("Text files", ".txt"),("All Files" ,"*.* ")))
-    read_text = open(filename,"r", encoding="utf-8" ).read()
+    read_text = open(filename, "r", encoding="utf-8" ).read()
     displayed_file.insert(tk.END, read_text)
-
-
-def split_file():
+    filename_splited= filename.split('/')
+    new_path = "DataSet/Sections/"+filename_splited[-1]
     #split by regular expression
     doc_splitter = re.compile(r"^(?:Section\ )?\d+[\.\d+]?", re.MULTILINE)
+    with open(filename,"r",encoding="utf-8") as f:
+        read_file = f.read()
+        with open(new_path ,"w",encoding="utf-8") as ff:
+            ff.write(read_file)
+            sections = []
+            text = []
+            text.append((f.read()))
+            starts = [match.span()[0] for match in doc_splitter.finditer(read_file)] + [len(read_file)]
+            sections = [read_file[starts[idx]:starts[idx + 1]] for idx in range(len(starts) - 1)]
+            for i, name in enumerate(sections):
+                split_file = new_path.split(sep='.txt')[0].split('/')[-1]
+                split_file = split_file + str(i + 1) + ".txt"
+                with open(r"DataSet/Sections/"+ split_file, "w", encoding='utf-8') as f:
+                    f.write(name + "\n")
+    #Sort the list
     for file in os.listdir(pathsections):
         full_path = os.path.join(pathsections, file)
         if os.path.isfile(full_path):
             with open(full_path, "r", encoding="utf-8") as f:
-                sections = []
-                text = []
-                listToStr = ""
-                text.append((f.read()))
-                listToStr = ' '.join([str(elem) for elem in text])
-                starts = [match.span()[0] for match in doc_splitter.finditer(listToStr)] + [len(listToStr)]
-                sections = [listToStr[starts[idx]:starts[idx + 1]] for idx in range(len(starts) - 1)]
-                for i, name in enumerate(sections):
-                    PathSections = os.path.join(pathsections, file)
-                    f = open(PathSections + str(i + 1), "w", encoding='utf-8')
-                    f.write(name + "\n")
-                    f.close()
+                save_file_name.append((f.readline()))
+                f.seek(0)
+    save_file_name.sort()
+    #Create graph with visualization
+    G = graphviz.Digraph(name="Article Summarizer", node_attr={'shape': 'tab', 'fixedsize': 'False'})
+    for file in os.listdir(section_path):
+        full_path = os.path.join(section_path, file)
+    with open(full_path, "r", encoding="utf-8") as f:
+        for i, name in enumerate(save_file_name):
+            if len(save_file_name) < i + 2:
+                break
+            else:
+                G.node(save_file_name[i])
+                G.edge(save_file_name[i], save_file_name[i + 1], constraint='true')
+                G.view(directory=tree_path)
+
+
 
 def get_file_summary():
   raw_text = displayed_file.get('1.0', tk.END)
@@ -73,18 +99,16 @@ def get_file_summary():
   #tab2_display_text.insert(tk.END, result)
 
 """
-"""
-
 def get_summary():
   raw_text = str(entry.get('1.0', tk.END))
   final_text = text_summarizer(raw_text)
   print(final_text)
   result = '\nSummary:{}'.format(final_text)
   tab1_display.insert(tk.END, result)
+"""
 
 
-"""
-"""
+
 
 
 def clear_text_result():
@@ -117,14 +141,15 @@ b3.grid(row=5, column=1, padx=10, pady=10)
 b4 = Button(tab2, text="Close", width=12, command=window.destroy)
 b4.grid(row=5, column=2, padx=10, pady=10)
 
-b5 = Button(tab2, text="Split file ", width=12 , command=split_file)
-b5.grid(row=5, column=0, padx=10, pady=10)
+#b5 = Button(tab2, text="Split file ", width=12 , command=split_file)
+#b5.grid(row=5, column=0, padx=10, pady=10)
 
 
 # Display Screen
 # tab2_display_text = Text(tab2)
 tab2_display_text = ScrolledText(tab2, height=10)
 tab2_display_text.grid(row=7, column=0, columnspan=3, padx=5, pady=5)
+
 
 # Allows you to edit
 tab2_display_text.config(state=NORMAL)
@@ -133,23 +158,12 @@ about_label = Label(tab1,
                     text="Summaryzer GUI V.0.0.1 \n Amir Aizin \n ",
                     pady=5, padx=5)
 about_label.grid(column=0, row=1)
-"""
+
+
+
 def get_filenames():
     path = "DataSet/TXT/"
     return os.listdir(path)
 
-root = Tk()
-l = Listbox(root, height=5)
-l = Listbox(root, height=5)
-l.grid(column=0, row=0, sticky=(N,W,E,S))
-s = ttk.Scrollbar(root, orient=VERTICAL, command=l.yview)
-s.grid(column=1, row=0, sticky=(N,S))
-l['yscrollcommand'] = s.set
-ttk.Sizegrip().grid(column=1, row=1, sticky=(S,E))
-root.grid_columnconfigure(0, weight=1)
-root.grid_rowconfigure(0, weight=1)
-for filename in get_filenames():
-    print(filename)
-    l.insert(END, filename)
 
-root.mainloop()
+window.mainloop()
