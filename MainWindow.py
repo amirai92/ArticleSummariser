@@ -55,6 +55,7 @@ tab_control.pack(expand=1, fill='both')
 
 # Functions
 def openfiles():
+    #tab2_display_text.config(state=DISABLED)
     try:
         os.mkdir(r"DataSet/Sections")
         messagebox.showinfo("Directory","Created new directory")
@@ -64,7 +65,7 @@ def openfiles():
     filename = filedialog.askopenfilename(initialdir=pathtext, title="Select A File",filetypes=(("Text files", ".txt"),("All Files" ,"*.* ")))
     show_file_name= filename.split('/')
     show_file_name = show_file_name[-1]
-    messagebox.showerror("File","The file:\n %s loaded successfully." %show_file_name)
+    messagebox.showerror("File","The file:\n%s loaded successfully." %show_file_name)
     read_text = open(filename, "r", encoding="utf-8" ).read()
     displayed_file.insert(tk.END, read_text)
     filename_splited= filename.split('/')
@@ -114,7 +115,6 @@ def openfiles():
     #b2.config(state=tk.ACTIVE)
 
 def splited_files():
-
     filename = filedialog.askopenfilename(initialdir=pathsections, title="Select A File",filetypes=(("Splitied Text files", ".txt"),("All Files" ,"*.* ")))
    # read_text = open(filename, "r", encoding="utf-8").read()
 
@@ -133,7 +133,8 @@ def splited_files():
     tab2_display_text.insert(tk.END, result)
     b3.config(state=tk.ACTIVE)
    # b2.config(state=tk.ACTIVE)
-
+    #displayed_file.delete(1.0,END)
+    #displayed_file.insert(tk.END,listToStr)
     #displayed_file.insert(tk.END, full)
 
 
@@ -150,12 +151,7 @@ def clear_text_result():
 def clear_text_file():
     displayed_file.delete('1.0', END)
     shutil.rmtree(pathsections)
-    b5.config(state=tk.ACTIVE)
-
-
-
-
-
+    b5.config(state=tk.DISABLED)
 
 
 
@@ -163,9 +159,9 @@ def clear_text_file():
 #l1 = Label(tab2, text="The Whole File Text:")
 #l1.grid(row=1, column=1)
 
-displayed_file = ScrolledText(tab2, height=7)  # Initial was Text(tab2)
-displayed_file.config(state=DISABLED)
+displayed_file = ScrolledText(tab2, height=10)  # Initial was Text(tab2)
 displayed_file.grid(row=2, column=0, columnspan=3, padx=5, pady=3)
+#displayed_file.config(state=ACTIVE)
 
 # BUTTONS FOR FILE READING TAB
 b0 = Button(tab2, text="Load File", width=12, command=openfiles, bg='#c5cae9')
@@ -188,12 +184,11 @@ b5.grid(row=5, column=0, padx=10, pady=10)
 
 # Display Screen
 # tab2_display_text = Text(tab2)
-tab2_display_text = ScrolledText(tab2, height=10)
-tab2_display_text.config(state=DISABLED)
+tab2_display_text = ScrolledText(tab2, height=15)
+
 tab2_display_text.grid(row=7, column=0, columnspan=3, padx=5, pady=5)
 
-
-#Create text box for About:
+#quote for about section:
 quote = """Have you ever encountered a situation where you had to scroll through a 400-word
 article only to realize that there were only a few key points in the article?
 We were all there.
@@ -202,11 +197,12 @@ it becomes quite difficult to extract the most important information in an optim
 as the information we accumulate is only growing.
 In recent years, advances and developments in machine learning and deep learning techniques
 have paved the way and will be a future breakthrough,
-therefore in this project the system that will help all kind of users 
+therefore in this project the system will help all kind of users 
 to automatically summarize sections within academic article.
 
 
 Version 0.1 Amir Aizin"""
+#Create text box for About:
 tab1_display_text = ScrolledText(tab1, height=13,font='bold,20')
 
 tab1_display_text.insert(tk.END, quote)
