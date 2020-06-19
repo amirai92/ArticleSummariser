@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk, filedialog, messagebox
 from tkinter.scrolledtext import *
-from shutil import copyfile
+from urllib import request
 
 import graphviz
 from PIL import ImageTk,Image
@@ -63,10 +63,10 @@ def openfiles():
         messagebox.showerror("Directory", "Creation of the directory failed" )
 
     filename = filedialog.askopenfilename(initialdir=pathtext, title="Select A File",filetypes=(("Text files", ".txt"),("All Files" ,"*.* ")))
-    show_file_name= filename.split('/')
+    show_file_name = filename.split('/')
     show_file_name = show_file_name[-1]
-    messagebox.showerror("File","The file:\n%s loaded successfully." %show_file_name)
-    read_text = open(filename, "r", encoding="utf-8" ).read()
+    messagebox.showerror("File", "The file:\n%s loaded successfully." % show_file_name)
+    read_text = open(filename, "r", encoding="utf-8").read()
     displayed_file.insert(tk.END, read_text)
     filename_splited= filename.split('/')
 
@@ -103,13 +103,11 @@ def openfiles():
         for i, name in enumerate(save_file_name):
             if len(save_file_name) < i + 2:
                 break
-            elif i==0:
+            elif i == 0:
                 G.node(save_file_name[i])
-
             else:
                 G.node(save_file_name[i])
                 G.edge(save_file_name[i], save_file_name[i + 1], constraint='true')
-
         G.view(directory=tree_path)
     b5.config(state=tk.ACTIVE)
     #b2.config(state=tk.ACTIVE)
@@ -124,7 +122,7 @@ def splited_files():
         listToStr = ""
         listToStr = ' '.join([str(elem) for elem in data])
         model = Summarizer()
-        result = model(listToStr, min_length=60)
+        result = model(listToStr, min_length=40)
         full = ''.join(result)
         #bert_path = os.path.join(bertPath, file)
         #oldfile = open(bert_path, 'w', encoding="utf-8")
@@ -144,7 +142,7 @@ def splited_files():
 def clear_text_result():
     tab2_display_text.delete('1.0', END)
     shutil.rmtree(pathsections)
-    b5.config(state=tk.ACTIVE)
+    b5.config(state=tk.DISABLED)
 
 
 # Clear Text  with position 1.0
@@ -188,20 +186,16 @@ tab2_display_text = ScrolledText(tab2, height=15)
 
 tab2_display_text.grid(row=7, column=0, columnspan=3, padx=5, pady=5)
 
+
 #quote for about section:
-quote = """Have you ever encountered a situation where you had to scroll through a 400-word
-article only to realize that there were only a few key points in the article?
-We were all there.
-In this age of information, when content is being created every second around the world,
-it becomes quite difficult to extract the most important information in an optimal period of time, 
-as the information we accumulate is only growing.
+quote = """
 In recent years, advances and developments in machine learning and deep learning techniques
 have paved the way and will be a future breakthrough,
 therefore in this project the system will help all kind of users 
 to automatically summarize sections within academic article.
 
 
-Version 0.1 Amir Aizin"""
+Version 0.1 amirai1@ac.sce.ac.il"""
 #Create text box for About:
 tab1_display_text = ScrolledText(tab1, height=13,font='bold,20')
 
