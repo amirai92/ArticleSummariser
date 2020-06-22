@@ -1,13 +1,14 @@
 """
 @author: Amir Aizin
+This script using the BERT Extractive summarizer , to summarize the data and then compare the results with rouge metric.
 """
 import logging
 import os
 from datetime import datetime
 from importlib import reload
 from summarizer import Summarizer
-
 logging.getLogger().setLevel(logging.INFO)
+
 
 # Variables:
 PathText = 'DataSet/TXT'
@@ -25,6 +26,8 @@ def readfile():
     logging.info("Started to read the data set")
     for file in os.listdir(PathText):
         full_path = os.path.join(PathText, file)
+        data = []
+        listToStr = ""
         if os.path.isfile(full_path):
             with open(full_path, "r", encoding="utf-8") as f:
                 data.append((f.read()))
@@ -33,11 +36,15 @@ def readfile():
                 f.close()
                 oldfile = open(full_path, 'w', encoding="utf-8")
 
-                oldfile.write(x)
+                # oldfile.write(x)
                 oldfile.close()
 
 
-# readfile()
+
+
+
+
+
 
 
 def bert_summarizer():
@@ -50,7 +57,9 @@ def bert_summarizer():
         full_path = os.path.join(PathText, file)
         if os.path.isfile(full_path):
             with open(full_path, "r", encoding="utf-8") as f:
+                data = []
                 data.append((f.read()))
+                listToStr = ""
                 listToStr = ' '.join([str(elem) for elem in data])
                 model = Summarizer()
                 result = model(listToStr, min_length=60)
@@ -63,8 +72,10 @@ def bert_summarizer():
 def main():
     startTime = datetime.now()
     logging.info("Script started")
+    readfile()
     bert_summarizer()
     logging.info("Script ended, execution time: " + str(datetime.now() - startTime))
+
 
 if __name__ == "__main__":
     main()
