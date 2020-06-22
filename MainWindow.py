@@ -114,7 +114,14 @@ def openfiles():
     #Create graph with visualization
 
     G = graphviz.Digraph(name="Article Hierarchy", node_attr={'shape': 'tab', 'fixedsize': 'False'})
-    os.mkdir(r"Tree")
+
+    try:
+        os.mkdir(r"Tree")
+        print("Created Directory for Tree Hierarchy")
+    except OSError:
+        print("Couldn't Create Directory for Tree Hierarchy")
+
+
     for file in os.listdir(section_path):
         full_path = os.path.join(section_path, file)
     with open(full_path, "r", encoding="utf-8") as f:
