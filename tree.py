@@ -1,12 +1,16 @@
-import os
+"""
+author:Amir Aizin
+This script doing
+"""
+import shutil
+
 import graphviz
 
 import os
 import re
 
 pathsections = "DataSet/Sections"
-section_path = "DataSet/Sections"
-tree_path = "DataSet/Tree"
+tree_path = "Tree"
 text = []
 save_file_name = []
 list_to_str = ""
@@ -28,11 +32,22 @@ def readData():
                 starts = [match.span()[0] for match in doc_splitter.finditer(listToStr)] + [len(listToStr)]
                 sections = [listToStr[starts[idx]:starts[idx + 1]] for idx in range(len(starts) - 1)]
                 for i, name in enumerate(sections):
-                    #TODO: Save to another directory the files that been sectioned:
-                    PathSections = os.path.join(pathsections, file)
-                    f = open(PathSections + str(i + 1), "w", encoding='utf-8')
+                    split_file = file.split(sep='.')[0]
+                    split_file = split_file + str(i + 1) + ".txt"
+                    """
+                    f = open(split_file, 'w')
+                    f.write(pathsections)
+                    f.close()
+                    os.chdir(pathsections)
+                    shutil.move(file_path, dir_name + '/' + file)
+                    """
+                    PathSections = os.path.join(pathsections, split_file)
+                    f = open(PathSections, "w", encoding='utf-8')
                     f.write(name + "\n")
                     f.close()
+
+
+
 
 def splited_files_into_list(save_file_name=None):
     for file in os.listdir(pathsections):
@@ -52,8 +67,8 @@ def splited_files_into_list(save_file_name=None):
 def graph_viz():
   #  list_to_str = ' '.join([str(elem) for elem in save_file_name])
     G = graphviz.Digraph(name="Article Summarizer", node_attr={'shape': 'tab', 'fixedsize' :'False'})
-    for file in os.listdir(section_path):
-        full_path = os.path.join(section_path, file)
+    for file in os.listdir(pathsections):
+        full_path = os.path.join(pathsections, file)
     with open(full_path, "r", encoding="utf-8") as f:
         for i,name in enumerate(save_file_name):
             if len(save_file_name) < i+2:
@@ -61,11 +76,12 @@ def graph_viz():
             else:
                 G.node(save_file_name[i])
                 G.edge(save_file_name[i],save_file_name[i+1], constraint='true')
-                G.view(directory=tree_path)
+        G.view(directory=tree_path)
+
 
 
 if __name__ == "__main__":
-    #readData()
+    readData()
     splited_files_into_list(save_file_name)
     graph_viz()
 

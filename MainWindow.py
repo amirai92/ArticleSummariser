@@ -1,3 +1,10 @@
+"""
+@author: Amir Aizin
+The main script of the project include GUI,
+loading splitted files into the system , then using BERT Summarizer on the specific splited file.
+
+"""
+
 import os
 import shutil
 import tkinter as tk
@@ -5,9 +12,9 @@ from tkinter import *
 from tkinter import ttk, filedialog, messagebox
 from tkinter.scrolledtext import *
 from urllib import request
-
 import graphviz
 from PIL import ImageTk,Image
+from pyqtgraph import canvas
 from summarizer import Summarizer
 
 pathsections = "DataSet/Sections"
@@ -18,36 +25,39 @@ section_path = "DataSet/Sections"
 text=[]
 
 # Structure and Layout
-
 window = Tk()
 window.iconbitmap('Logo FinalProject.ico')
-window.title("Summaryzer")
-window.geometry("800x600")
-window.config(background='black')
+window.title("Academic Article Summaryzer")
+window.geometry("1000x900")
+#window['bg'] = 'blue'
+#window.configure(background='blue')
 style = ttk.Style(window)
 style.configure('lefttab.TNotebook', tabposition='wn' )
 
 
 
 # TAB LAYOUT
-tab_control = ttk.Notebook(window, style='lefttab.TNotebook')
+tab_control = ttk.Notebook(window)
 
 tab1 = ttk.Frame(tab_control)
 tab2 = ttk.Frame(tab_control)
 
 # ADD TABS TO NOTEBOOK
-tab_control.add(tab2, text=f'{"File":^21s}')
+tab_control.add(tab2, text=f'{"File":^20s}')
 tab_control.add(tab1, text=f'{"About":^20s}')
 
 
 
-label1 = Label(tab1, text='Academic Article Summarizer ', padx=5, pady=5)
+label1 = Label(tab1, text='Explain on the system :', font='Arial' ,padx=5, pady=5)
 label1.grid(column=0, row=0)
 
-#label2 = Label(tab2, text='Load File', padx=5, pady=5)
-#label2.grid(column=0, row=0)
 
+label2 = Label(tab2, text='Loaded file contents : ',font='Arial', padx=5, pady=5)
+#label2['bg'] = 'blue'
+label2.grid(column=0, row=0,columnspan=1)
 
+label3 = Label(tab2, text="Summarized text :", font='Arial', padx=5, pady=5)
+label3.grid(column=0, row=9, columnspan=1)
 
 tab_control.pack(expand=1, fill='both')
 
@@ -58,14 +68,14 @@ def openfiles():
     #tab2_display_text.config(state=DISABLED)
     try:
         os.mkdir(r"DataSet/Sections")
-        messagebox.showinfo("Directory","Created new directory")
+        messagebox.showinfo("Directory","Created new directory.\nchoose a file to summarize")
     except OSError:
-        messagebox.showerror("Directory", "Creation of the directory failed" )
+        messagebox.showerror("Directory", "Creation of the directory failed." )
 
     filename = filedialog.askopenfilename(initialdir=pathtext, title="Select A File",filetypes=(("Text files", ".txt"),("All Files" ,"*.* ")))
     show_file_name = filename.split('/')
     show_file_name = show_file_name[-1]
-    messagebox.showerror("File", "The file:\n%s loaded successfully." % show_file_name)
+    messagebox.showerror("File", "The file:\n%s loaded and splitted successfully!\n" % show_file_name)
     read_text = open(filename, "r", encoding="utf-8").read()
     displayed_file.insert(tk.END, read_text)
     filename_splited= filename.split('/')
@@ -83,10 +93,15 @@ def openfiles():
             starts = [match.span()[0] for match in doc_splitter.finditer(read_file)] + [len(read_file)]
             sections = [read_file[starts[idx]:starts[idx + 1]] for idx in range(len(starts) - 1)]
             for i, name in enumerate(sections):
+
                 split_file = new_path.split(sep='.txt')[0].split('/')[-1]
                 split_file = split_file +"_"+ str(i + 1) + ".txt"
                 with open(r"DataSet/Sections/"+ split_file, "w", encoding='utf-8') as f:
                     f.write(name + "\n")
+            #save_file_name.append((f.readline()))
+            #f.seek(0)
+            #save_file_name.sort()
+
     #Sort the list
     for file in os.listdir(pathsections):
         full_path = os.path.join(pathsections, file)
@@ -95,8 +110,11 @@ def openfiles():
                 save_file_name.append((f.readline()))
                 f.seek(0)
     save_file_name.sort()
+
     #Create graph with visualization
+
     G = graphviz.Digraph(name="Article Hierarchy", node_attr={'shape': 'tab', 'fixedsize': 'False'})
+    os.mkdir(r"Tree")
     for file in os.listdir(section_path):
         full_path = os.path.join(section_path, file)
     with open(full_path, "r", encoding="utf-8") as f:
@@ -114,22 +132,24 @@ def openfiles():
 
 def splited_files():
     filename = filedialog.askopenfilename(initialdir=pathsections, title="Select A File",filetypes=(("Splitied Text files", ".txt"),("All Files" ,"*.* ")))
-   # read_text = open(filename, "r", encoding="utf-8").read()
-
     with open(filename, "r", encoding="utf-8") as f:
         data = []
         data.append((f.read()))
         listToStr = ""
         listToStr = ' '.join([str(elem) for elem in data])
+        messagebox.showinfo("Processing","Processing the data..\nIt may take few seconds..")
         model = Summarizer()
         result = model(listToStr, min_length=40)
         full = ''.join(result)
         #bert_path = os.path.join(bertPath, file)
         #oldfile = open(bert_path, 'w', encoding="utf-8")
         #oldfile.write(full)
-    result = '\nSummary:{}'.format(full)
+    result = 'Summary:{}'.format(full)
     tab2_display_text.insert(tk.END, result)
-    b3.config(state=tk.ACTIVE)
+    #img = PhotoImage(file=r"Rouge Results/rouge-results.png")
+   # canvas.create_image(20,20,anchor=NW,image=img)
+    #b3.config(state=tk.ACTIVE)
+    b5.config(state=tk.ACTIVE)
    # b2.config(state=tk.ACTIVE)
     #displayed_file.delete(1.0,END)
     #displayed_file.insert(tk.END,listToStr)
@@ -137,19 +157,30 @@ def splited_files():
 
 
 
-
-
-def clear_text_result():
-    tab2_display_text.delete('1.0', END)
-    shutil.rmtree(pathsections)
-    b5.config(state=tk.DISABLED)
-
-
-# Clear Text  with position 1.0
+#The top window
 def clear_text_file():
     displayed_file.delete('1.0', END)
-    shutil.rmtree(pathsections)
+    tab2_display_text.delete('1.0', END)
+    try:
+        shutil.rmtree(pathsections)
+        shutil.rmtree(tree_path)
+    except:
+            print("Couldn't remove the directory")
     b5.config(state=tk.DISABLED)
+
+"""
+#The bottom window
+def clear_text_result():
+    tab2_display_text.delete('1.0', END)
+    try:
+        shutil.rmtree(pathsections)
+    except:
+        print("Couldn't remove the directory")
+    b5.config(state=tk.DISABLED)
+    b3.config(state=tk.DISABLED)
+"""
+
+
 
 
 
@@ -157,7 +188,7 @@ def clear_text_file():
 #l1 = Label(tab2, text="The Whole File Text:")
 #l1.grid(row=1, column=1)
 
-displayed_file = ScrolledText(tab2, height=10)  # Initial was Text(tab2)
+displayed_file = ScrolledText(tab2, height=15 ,width=100,font='Arial,bold,20')  # Initial was Text(tab2)
 displayed_file.grid(row=2, column=0, columnspan=3, padx=5, pady=3)
 #displayed_file.config(state=ACTIVE)
 
@@ -171,42 +202,42 @@ b1.grid(row=3, column=1, padx=10, pady=10)
 #b2 = Button(tab2, text="Load Tree visualization", width=20, command=load_tree,bg="#b9f6ca" ,state=tk.DISABLED)
 #b2.grid(row=5, column=2, padx=10, pady=10)
 
-b3 = Button(tab2, text="Clear Result", width=12, command=clear_text_result, state=tk.DISABLED)
-b3.grid(row=5, column=1, padx=10, pady=10)
 
-b4 = Button(tab2, text="Close", width=12, command=window.destroy)
-b4.grid(row=3, column=2, padx=10, pady=10)
 
-b5 = Button(tab2, text="Summarize the splitied file  ", width=18 , command=splited_files, state=tk.DISABLED )
-b5.grid(row=5, column=0, padx=10, pady=10)
+#b3 = Button(tab2, text="Clear Result", width=12, command=clear_text_result, state=tk.DISABLED)
+#b3.grid(row=10, column=1, padx=10, pady=10)
+
+b4 = Button(tab2, text="Close",width=12, command=window.destroy)
+b4.grid(row=3, column=2, padx=11, pady=10)
+
+b5 = Button(tab2, text="Summarize the splitied file  ", width=18, command=splited_files, state=tk.DISABLED )
+b5.grid(row=16, column=1, padx=10, pady=10)
+
+
+
+
 
 # Display Screen
 # tab2_display_text = Text(tab2)
-tab2_display_text = ScrolledText(tab2, height=15)
+tab2_display_text = ScrolledText(tab2, height=14,width=100, font='Arial,bold,20')
+tab2_display_text.grid(row=15, column=0, columnspan=3, padx=5, pady=5)
 
-tab2_display_text.grid(row=7, column=0, columnspan=3, padx=5, pady=5)
 
 
 #quote for about section:
-quote = """
-In recent years, advances and developments in machine learning and deep learning techniques
-have paved the way and will be a future breakthrough,
-therefore in this project the system will help all kind of users 
+quote = """In recent years, advances and developments in machine learning and deep learning techniques
+have paved the way and will be a future breakthrough.
+therefore in this project ,the system will help to all kind of users 
 to automatically summarize sections within academic article.
-
-
-Version 0.1 amirai1@ac.sce.ac.il"""
+Version 0.1"""
 #Create text box for About:
-tab1_display_text = ScrolledText(tab1, height=13,font='bold,20')
-
+tab1_display_text = ScrolledText(tab1, height=6 ,width=100,font='Arial,bold,26',)
+photo = tk.PhotoImage(file="Logo FinalProject BIG.png")
+about_label = tk.Label(tab1,image=photo)
+about_label.grid(column=0, row=10,sticky="S,E")
 tab1_display_text.insert(tk.END, quote)
 tab1_display_text.config(state=DISABLED)
-tab1_display_text.grid(row=7, column=0, columnspan=3, padx=5, pady=5)
-
-
-
-
-
+tab1_display_text.grid(row=7, column=0, columnspan=2, padx=5, pady=5)
 
 
 def get_filenames():
