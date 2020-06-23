@@ -24,6 +24,7 @@ tree_path = "Tree"
 section_path = "DataSet/Sections"
 text=[]
 
+
 # Structure and Layout
 window = Tk()
 window.iconbitmap('Logo FinalProject.ico')
@@ -112,7 +113,7 @@ def openfiles():
     save_file_name.sort()
 
     #Create graph with visualization
-
+    print(save_file_name)
     G = graphviz.Digraph(name="Article Hierarchy", node_attr={'shape': 'tab', 'fixedsize': 'False'})
 
     try:
@@ -135,7 +136,12 @@ def openfiles():
                 G.edge(save_file_name[i], save_file_name[i + 1], constraint='true')
         G.view(directory=tree_path)
     b5.config(state=tk.ACTIVE)
+    button_bonus.config(state=tk.ACTIVE)
     #b2.config(state=tk.ACTIVE)
+
+
+
+
 
 def splited_files():
     filename = filedialog.askopenfilename(initialdir=pathsections, title="Select A File",filetypes=(("Splitied Text files", ".txt"),("All Files" ,"*.* ")))
@@ -146,7 +152,8 @@ def splited_files():
         listToStr = ' '.join([str(elem) for elem in data])
         messagebox.showinfo("Processing","Processing the data..\nIt may take few seconds..")
         model = Summarizer()
-        result = model(listToStr, min_length=40)
+        result = model(listToStr, min_length=val1)
+        print("check if the button accept the right value",val1)
         full = ''.join(result)
         #bert_path = os.path.join(bertPath, file)
         #oldfile = open(bert_path, 'w', encoding="utf-8")
@@ -163,6 +170,15 @@ def splited_files():
     #displayed_file.insert(tk.END, full)
 
 
+def get_slider_value():
+    global val1
+    try:
+        val1= slider_1.get()
+    except:
+        val1=25
+        messagebox.showinfo("Error","Error occurred while setting minimum length,\nThe value been set to default value ")
+
+
 
 #The top window
 def clear_text_file():
@@ -174,6 +190,7 @@ def clear_text_file():
     except:
             print("Couldn't remove the directory")
     b5.config(state=tk.DISABLED)
+    button_bonus.config(state=tk.DISABLED)
 
 """
 #The bottom window
@@ -189,6 +206,24 @@ def clear_text_result():
 
 
 
+#slider_1 = tk.Scale(window, from_=20, to=500, length=400, resolution=1, orient=tk.HORIZONTAL)
+#slider_1.pack()
+
+
+def popup_window():
+
+    window = tk.Toplevel()
+    global slider_1
+    slider_1 = tk.Scale(window, from_=1, to=60, length=60, resolution=1, orient=tk.HORIZONTAL)
+    slider_1.pack()
+
+
+
+    button1 = tk.Button(window, text="Select", command=get_slider_value)
+    button1.pack()
+
+    button_close = tk.Button(window, text="Close", command=window.destroy)
+    button_close.pack(fill='x')
 
 
 # FILE PROCESSING TAB
@@ -220,8 +255,17 @@ b4.grid(row=3, column=2, padx=11, pady=10)
 b5 = Button(tab2, text="Summarize the splitied file  ", width=18, command=splited_files, state=tk.DISABLED )
 b5.grid(row=16, column=1, padx=10, pady=10)
 
+#create scale widget for bert summarizer min length
+#slider1 = Scale(tab2, from_=20, to=500, length=400, resolution=1, orient=HORIZONTAL)
+#slider1.grid()
+
+button_bonus = tk.Button(tab2, text="Minimum Length",command=popup_window,state=DISABLED)
+button_bonus.grid(row=16, column=0, padx=10, pady=10)
 
 
+
+#button1 = Button(tab2, text="Select", command=get_slider_value)
+#button1.grid(row=16, column=0, padx=10, pady=10)
 
 
 # Display Screen
