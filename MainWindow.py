@@ -131,13 +131,11 @@ def openfiles():
                 break
             elif i == 0:
                 G.node(save_file_name[i])
-            #elif LooseVersion(str1) != LooseVersion(save_file_name[i + 1][0]):
-            #        G.node(save_file_name[i +1])
-            #        G.node(save_file_name[i] , save_file_name[ i +1 ])
 
             elif save_file_name[i][1] == '.' and save_file_name[i][2] != ' ' and save_file_name[i+1][2].isdigit() and LooseVersion(save_file_name[i][2]) < LooseVersion(save_file_name[i+1][2]):
                 G.node(save_file_name[i])
                 G.edge(save_file_name[i],save_file_name[i+1])
+
             else:
                 G.node(save_file_name[0])
                 G.edge(save_file_name[0], save_file_name[i + 1], constraint='true')
