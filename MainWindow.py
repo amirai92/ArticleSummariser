@@ -8,6 +8,7 @@ loading splitted files into the system , then using BERT Summarizer on the speci
 import os
 import shutil
 import tkinter as tk
+from distutils.version import LooseVersion, StrictVersion
 from tkinter import *
 from tkinter import ttk, filedialog, messagebox
 from tkinter.scrolledtext import *
@@ -94,7 +95,6 @@ def openfiles():
             starts = [match.span()[0] for match in doc_splitter.finditer(read_file)] + [len(read_file)]
             sections = [read_file[starts[idx]:starts[idx + 1]] for idx in range(len(starts) - 1)]
             for i, name in enumerate(sections):
-
                 split_file = new_path.split(sep='.txt')[0].split('/')[-1]
                 split_file = split_file +"_"+ str(i + 1) + ".txt"
                 with open(r"DataSet/Sections/"+ split_file, "w", encoding='utf-8') as f:
@@ -110,10 +110,9 @@ def openfiles():
             with open(full_path, "r", encoding="utf-8") as f:
                 save_file_name.append((f.readline()))
                 f.seek(0)
-    save_file_name.sort()
 
+    save_file_name.sort()
     #Create graph with visualization
-    print(save_file_name)
     G = graphviz.Digraph(name="Article Hierarchy", node_attr={'shape': 'tab', 'fixedsize': 'False'})
 
     try:
@@ -127,13 +126,21 @@ def openfiles():
         full_path = os.path.join(section_path, file)
     with open(full_path, "r", encoding="utf-8") as f:
         for i, name in enumerate(save_file_name):
+            str1 = save_file_name[i][0]
             if len(save_file_name) < i + 2:
                 break
             elif i == 0:
                 G.node(save_file_name[i])
-            else:
+            #elif LooseVersion(str1) != LooseVersion(save_file_name[i + 1][0]):
+            #        G.node(save_file_name[i +1])
+            #        G.node(save_file_name[i] , save_file_name[ i +1 ])
+
+            elif save_file_name[i][1] == '.' and save_file_name[i][2] != ' ' and save_file_name[i+1][2].isdigit() and LooseVersion(save_file_name[i][2]) < LooseVersion(save_file_name[i+1][2]):
                 G.node(save_file_name[i])
-                G.edge(save_file_name[i], save_file_name[i + 1], constraint='true')
+                G.edge(save_file_name[i],save_file_name[i+1])
+            else:
+                G.node(save_file_name[0])
+                G.edge(save_file_name[0], save_file_name[i + 1], constraint='true')
         G.view(directory=tree_path)
     b5.config(state=tk.ACTIVE)
     button_bonus.config(state=tk.ACTIVE)
