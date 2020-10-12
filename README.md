@@ -4,4 +4,5 @@ produces a hierarchy summarisation. The summariser produces a hierarchy of relat
 Dependencies: Keras , BERT , Rouge , Pandas , NLTK , Attention Layer .
 
 Special thanks to my academic instructur Dr. Marina Litvak
+
 © B.Sc. Amir Aizin - Software Engineer
